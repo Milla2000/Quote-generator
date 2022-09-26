@@ -1,3 +1,5 @@
+const loader = document.getElementById("loader");
+const wrapper = document.getElementById("wrapper");
 const quoteText = document.querySelector(".quote"),
 quoteBtn = document.querySelector("button"),
 authorName = document.querySelector(".name"),
@@ -6,16 +8,37 @@ copyBtn = document.querySelector(".copy"),
 twitterBtn = document.querySelector(".twitter"),
 synth = speechSynthesis;
 
-function randomQuote(){
+
+// Show Loading
+function loading() {
+    loader.hidden = false;
+    wrapper.hidden = true;
+}
+
+// Hide Loading
+function complete() {
+    if (!loader.hidden) {
+        wrapper.hidden = false;
+        loader.hidden = true;
+    }
+}
+
+loading();
+function randomQuote(){  
+    loading();  
     quoteBtn.classList.add("loading");
     quoteBtn.innerText = "Loading Quote...";
-    fetch("http://api.quotable.io/random").then(response => response.json()).then(result => {
+    fetch("http://api.quotable.io/random").then(response => response.json()).then (result => {
+        complete();
         quoteText.innerText = result.content;
         authorName.innerText = result.author;
         quoteBtn.classList.remove("loading");
         quoteBtn.innerText = "New Quote";
+    
     });
+   
 }
+
 
 speechBtn.addEventListener("click", ()=>{
     if(!quoteBtn.classList.contains("loading")){
@@ -32,8 +55,10 @@ copyBtn.addEventListener("click", ()=>{
 });
 
 twitterBtn.addEventListener("click", ()=>{
-    let tweetUrl = `https://twitter.com/intent/tweet?url=${quoteText.innerText}`;
+    let tweetUrl = `https://twitter.com/intent/tweet?url=${quoteText.innerText} 
+     - ${authorName.innerText}`;
     window.open(tweetUrl, "_blank");
 });
 
 quoteBtn.addEventListener("click", randomQuote);
+complete();
